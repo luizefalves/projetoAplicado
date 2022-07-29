@@ -3,19 +3,13 @@ import json
 import pandas as pd
 import boto3
 import os
-import numpy as np
 from datetime import datetime
 from io import StringIO
 import time
-import glob
 import configparser
 
-
-
-
-
 def s3_upload(path, source):
-    
+
     config = configparser.ConfigParser()
     config.read('cred.conf')
 
@@ -34,7 +28,6 @@ def s3_upload(path, source):
                              aws_secret_access_key=secret_access_key,
                              region_name='sa-east-1')
     s3.Bucket(destination_s3_bucket).upload_file(path,upload_file_key)
-
 
 
 def vesselCompanies():

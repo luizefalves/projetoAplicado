@@ -49,11 +49,6 @@ def vessel_inradius(port_name, api):
     df['port_name'] = port_name
     return df
 
-
-
-
-
-
 def s3_upload(df, source, access_key, secret_access_key):
     t = datetime.now()
     date = t.strftime('%Y-%m-%d %Hh:%Mm')
@@ -75,8 +70,6 @@ def s3_upload(df, source, access_key, secret_access_key):
         Body=csv_buffer.getvalue()
     )
 
-
-
 def main():
   port_names = ["Rotterdam","Antwerp","Hamburg","Valencia","Barcelona","London","Mersin","Izmit",\
                 "Piraeus","Alexandria", "Jebel Ali","Cape Town"]
@@ -87,8 +80,6 @@ def main():
 
   appended_data = pd.concat(appended)
   s3_upload(appended_data, "vessels")
-
-
   return print("Data was Extracted")
 
 if __name__ == "__main__":
