@@ -3,14 +3,21 @@ import json
 import pandas as pd
 import boto3
 import os
-import numpy as np
 from datetime import datetime
 from io import StringIO
-import time
+import configparser
 
-def port_find(port_name):
+
+config = configparser.ConfigParser()
+config.read('cred.conf')
+
+access_key = config['AWS']['KEY']
+secret_access_key = config['AWS']['SECRET']
+api = config['API']['KEY']
+
+def port_find(port_name, api):
     params = {
-      'api-key': 'a599c1bb-61dc-4a9d-bc58-daf57d6ce8a5',
+      'api-key': api,
       'name': str(port_name)
     }
     method = 'port_find'
@@ -21,9 +28,9 @@ def port_find(port_name):
     return  porto
 
 
-def vessel_inradius(port_name):
+def vessel_inradius(port_name, api):
     params = {
-      'api-key': 'a599c1bb-61dc-4a9d-bc58-daf57d6ce8a5',
+      'api-key': api,
       'port_uuid': port_find(port_name),
         'radius' : '30'
     }
@@ -38,7 +45,7 @@ def vessel_inradius(port_name):
             & (df['imo'].notnull())
            ]
     t = datetime.now()
-    df['request_time'] = t.strftime('%y-%m-%d %Hh:%Mm')
+    df['request_time'] = t.strftime('%Y-%m-%d %Hh:%Mm')
     df['port_name'] = port_name
     return df
 
@@ -47,9 +54,9 @@ def vessel_inradius(port_name):
 
 
 
-def s3_upload(df, source):
+def s3_upload(df, source, access_key, secret_access_key):
     t = datetime.now()
-    date = t.strftime('%y-%m-%d %Hh:%Mm')
+    date = t.strftime('%Y-%m-%d %Hh:%Mm')
     destination_s3_bucket = 'datalake-proaplicado'
     upload_file_key = 'raw-zone/' + '{}-{}'.format(date,source)
     filepath =  upload_file_key + ".csv"
@@ -68,8 +75,6 @@ def s3_upload(df, source):
         Body=csv_buffer.getvalue()
     )
 
-access_key='AKIAYVR3CNZ6SSYYHWMW'
-secret_access_key='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'
 
 
 def main():
